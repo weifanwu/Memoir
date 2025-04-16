@@ -1,5 +1,5 @@
 const CACHE_NAME = "my-pwa-cache-v1";
-const urlsToCache = ["/", "/offline.html", "/icons/icon-192x192.png"];
+const urlsToCache = ["/", "/offline.html", "/icons/icon-192x192.png", "/styles/Dialog.module.css"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
