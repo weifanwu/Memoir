@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>You’re Offline</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background: linear-gradient(to right, #f7f8fc, #e0eafc);
+        color: #333;
+        text-align: center;
+        padding: 2rem;
+      }
+      img {
+        max-width: 250px;
+        margin-bottom: 1.5rem;
+      }
+      h1 {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+      }
+      p {
+        font-size: 1.1rem;
+        color: #555;
+        max-width: 400px;
+      }
+      .button {
+        margin-top: 1.5rem;
+        padding: 0.8rem 1.5rem;
+        font-size: 1rem;
+        background-color: #0070f3;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        text-decoration: none;
+        transition: background-color 0.2s ease;
+      }
+      .button:hover {
+        background-color: #0059c1;
+      }
+    </style>
+  </head>
+  <body>
+    <img src="/icons/icon-192x192.png" alt="Offline Icon" />
+    <h1>You’re Offline</h1>
+    <p>Looks like you’re not connected to the internet. Don’t worry, you can still write your diary offline. Any updates will sync when you're back online.</p>
+    <a class="button" href="/">Go Back Home</a>
+  </body>
+</html>
