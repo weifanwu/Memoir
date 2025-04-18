@@ -8,6 +8,7 @@ export default function Dialog() {
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
+ 
     const readers = files.map(file => {
       return new Promise<string>((resolve) => {
         const reader = new FileReader();
