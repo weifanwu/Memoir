@@ -1,11 +1,10 @@
-import PwaInit from "@/components/PwaInit"; // ✅ 路径根据你的位置修改
-import Dialog from "@/components/Dialog";
+"use client";
 
 export default function Home() {
+
   return (
     <div>
-      <PwaInit />
-      <Dialog />
+      <h1>欢迎👏！这里可以随便写日记📓</h1>
     </div>
   );
 }
