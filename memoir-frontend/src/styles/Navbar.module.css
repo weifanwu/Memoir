@@ -1,53 +1,78 @@
+/* 顶部导航栏样式 */
 .navbar {
-   background-color: #333;
-   color: #fff;
-   padding: 1rem 2rem;
-   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
- }
- 
- .navbar-container {
-   display: flex;
-   justify-content: space-between;
-   align-items: center;
-   max-width: 1200px;
-   margin: 0 auto;
- }
- 
- .logo-link {
-   font-size: 1.5rem;
-   font-weight: bold;
-   color: #fff;
-   text-decoration: none;
- }
- 
- .navbar-links {
-   list-style-type: none;
-   display: flex;
-   gap: 20px;
- }
- 
- .navbar-link {
-   color: #fff;
-   text-decoration: none;
-   font-size: 1rem;
-   padding: 0.5rem;
-   transition: color 0.3s ease, background-color 0.3s ease;
- }
- 
- .navbar-link:hover {
-   color: #333;
-   background-color: #fff;
-   border-radius: 5px;
- }
- 
- @media (max-width: 768px) {
-   .navbar-container {
-     flex-direction: column;
-     align-items: flex-start;
-   }
- 
-   .navbar-links {
-     flex-direction: column;
-     gap: 10px;
-   }
- }
+  background: linear-gradient(45deg, #6a11cb, #2575fc);  /* 渐变背景 */
+  color: #fff;
+  padding: 1rem 2rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease; /* 平滑过渡效果 */
+}
+
+.navbar:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* 鼠标悬停时增加阴影 */
+}
+
+/* 容器，内容居中并有间距 */
+.navbarContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Logo 样式 */
+.logoLink {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #fff;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.logoLink:hover {
+  color: #ffd700;  /* 悬停时的黄色 */
+}
+
+/* 导航栏链接列表 */
+.navbarLinks {
+  list-style-type: none;
+  display: flex;
+  gap: 30px;
+  margin: 0;
+}
+
+/* 每个链接的样式 */
+.navbarLink {
+  color: #fff;
+  text-decoration: none;
+  font-size: 1.1rem;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  transition: background-color 0.3s ease, transform 0.3s ease; /* 增加交互动画 */
+}
+
+.navbarLink:hover {
+  background-color: rgba(255, 255, 255, 0.2);  /* 悬停时的背景 */
+  transform: scale(1.05);  /* 放大效果 */
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .navbarContainer {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem;
+  }
+
+  .navbarLinks {
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+  }
+
+  .navbarLink {
+    width: 100%;
+    text-align: left;
+    padding: 0.8rem 1.5rem;
+  }
+}

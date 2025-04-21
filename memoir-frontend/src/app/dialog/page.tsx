@@ -12,7 +12,10 @@ export default function Dialog() {
     newWorker.onmessage = (e) => {
       if (e.data.status === 'success') {
         alert('日记已保存！');
+        setText('');
+        setImages([]);
       } else {
+        alert('保存失败');
         console.error('保存失败:', e.data.error);
       }
     };
@@ -33,8 +36,6 @@ export default function Dialog() {
   const handleSubmit = () => {
     if (worker) {
       worker.postMessage({ type: 'SAVE_ENTRY', entry: { text, images } });
-      setText('');
-      setImages([]);
     }
   };
 
