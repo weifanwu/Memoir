@@ -12,13 +12,13 @@ const Navbar = () => {
         </div>
         <ul className={styles.navbarLinks}>
           <li>
-            <Link href="/your-dialogs" style={{ textDecoration: 'none' }}>
-              <div className={styles.navbarLink}>Your Dialogs</div>
+            <Link href="/your-diaries" style={{ textDecoration: 'none' }}>
+              <div className={styles.navbarLink}>Your Diaries</div>
             </Link>
           </li>
           <li>
-            <Link href="/dialog" style={{ textDecoration: 'none' }}>
-              <div className={styles.navbarLink}>Dialog</div>
+            <Link href="/diary" style={{ textDecoration: 'none' }}>
+              <div className={styles.navbarLink}>Diary</div>
             </Link>
           </li>
         </ul>

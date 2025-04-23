@@ -1,8 +1,8 @@
 'use client';
 import { useState, useEffect } from 'react';
-import styles from '../../styles/Dialog.module.css'; // 使用 CSS 模块
+import styles from '../../styles/Diary.module.css'; // 使用 CSS 模块
 
-export default function Dialog() {
+export default function Diary() {
   const [text, setText] = useState('');
   const [images, setImages] = useState<Blob[]>([]);
   const [worker, setWorker] = useState<Worker | null>(null);
@@ -33,9 +33,41 @@ export default function Dialog() {
     setImages(prev => prev.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = () => {
-    if (worker) {
-      worker.postMessage({ type: 'SAVE_ENTRY', entry: { text, images } });
+  const handleSubmit = async () => {
+    if (!text.trim()) {
+      alert('请填写日记内容');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('content', text);
+    images.forEach((image, _) => {
+      formData.append('images[]', image); 
+    });
+
+    try {
+      const response = await fetch('http://localhost:8000/api/addDiary', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        alert('日记已保存！');
+        setText('');
+        setImages([]);
+      } else {
+        alert('保存失败');
+        console.error('保存失败:', result);
+      }
+    } catch (error) {
+      if (worker) {
+        console.log('离线保存...');
+        worker.postMessage({ type: 'SAVE_ENTRY', entry: { text, images } });
+      } else {
+        alert('保存失败');
+        console.error('Worker 不可用:', error);
+      }
     }
   };
 
