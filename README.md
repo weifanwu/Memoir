@@ -1,100 +1,95 @@
-# 📝 离线日记 Memoir
+# 📝 Memoir – The Offline Journal
 
-> 一个注重隐私、安全与离线能力的图文日记应用，结合 AI 智能检索与 Serverless 自动化功能。
-
----
-
-## 🌟 项目愿景：
-
-现代人越来越依赖手机和网络记录生活，但多数日记 App：
-- 需要网络才能打开或编辑
-- 日记数据存储在云端，隐私难以保证
-- 搜索功能弱，只能靠关键词
-
-**Memoir 想改变这一切。**
-
-### 👇 我们想做的是：
-- ✅ 离线写作 → 没网也能写
-- ✅ 本地优先 → 所有数据存在你自己的设备
-- ✅ AI 助力 → 用自然语言搜索过去的日记
-- ✅ 安全备份 → 想同步就同步，不上传不强求
-- ✅ 情绪追踪 & 总结 → 自动生成你的月度生活报告
+> A privacy-first, secure, and offline-capable visual journaling app, powered by AI search and serverless automation.
 
 ---
 
-## 📘 Memoir 是什么？
+## 🌟 Vision
 
-Memoir 是一个结合现代前端技术（Next.js PWA）、后端微服务（Spring Boot）、AI 搜索与分析功能的**离线优先日记应用**，为用户提供：
+Modern users rely on digital tools to document their lives, but most journaling apps:
 
-- 私人空间 → 完全本地存储，无需担心隐私泄露
-- 离线写作 → 即使没有网络也能畅快记录
-- 智能检索 → 支持自然语言搜索日记
-- 数据安全 → 本地加密 + 云端可选备份
-- 自动总结 → 每周/每月生活内容摘要推送
+- Require an internet connection to work
+- Store your data in the cloud, risking your privacy
+- Offer poor search functionality, often limited to keywords
 
----
+**Memoir aims to change all of that.**
 
-## 🌟 核心理念
+### Here's what we're building:
 
-- **🔐 安全私密**：所有数据默认本地存储，用户隐私优先
-- **📴 离线优先**：断网环境下依然可用，支持 IndexedDB 本地缓存
-- **🖼 图文结合**：支持插入图片与文字说明，丰富记录内容
-- **🧠 智能检索**：AI 驱动的自然语言搜索，轻松找到回忆
-- **💾 数据安全**：支持本地备份 & 云端同步，保障数据不丢失
-
-## 🎯 核心理念解析
-
-| 理念         | 解释                                                                 |
-|--------------|----------------------------------------------------------------------|
-| 安全私密     | 用户数据默认不上传，所有内容存储在本地 IndexedDB 或本地磁盘           |
-| 离线优先     | 完全脱离网络依然可以浏览、记录和搜索日记                             |
-| AI 能力加持  | 支持自然语言搜索、情绪识别、内容总结和关键词提取                     |
-| 可备份        | 用户可以手动导出/同步内容到云端，如 AWS S3                           |
-| 自由分享     | 允许用户选择性地将日记生成图片/链接，分享给朋友（无需注册登录）        |
+- ✅ **Offline Writing** – Journal without an internet connection  
+- ✅ **Local-First Storage** – Your data lives on your device  
+- ✅ **AI-Assisted Search** – Find memories via natural language  
+- ✅ **Secure Backups** – Sync on your terms  
+- ✅ **Mood Tracking & Summaries** – Monthly life digests, automatically
 
 ---
 
-## 🧱 技术架构
+## 📘 What Is Memoir?
 
-### ⚛️ 前端（Next.js）
+Memoir is an **offline-first journaling application** built with modern tools like **Next.js PWA**, **Spring Boot microservices**, and AI-assisted search.
 
-- PWA 支持，安装即用
-- IndexedDB 本地缓存
-- JWT 用户身份验证
-- 富文本与图像编辑器支持
-- ECharts/D3 数据趋势可视化
+Key features:
 
-### ☕ 后端微服务（Java Spring Boot）
-
-- **用户服务**
-  - 登录/注册、JWT 验证
-  - 权限控制 & 用户信息查询
-
-- **内容服务**
-  - 日记创建、编辑、删除、搜索
-  - 图片上传处理与存储（可对接 S3）
-  - 离线同步机制
-
-- **AI 服务**
-  - Elasticsearch 或向量数据库（如 Weaviate）实现自然语言搜索
-  - AI 内容推荐
-  - 自动生成摘要与标签
-
-- **备份服务**
-  - 云端数据同步（例如 AWS S3）
-  - 一键导出/恢复本地数据
-
-### ☁️ Serverless 功能（AWS Lambda）
-
-- 自动生成周报 / 月报
-- 后台定时任务（定期分析用户数据）
-- 内容分析 & 标签聚合
+- 💾 Private by default – All data stored locally
+- ✍️ Seamless offline editing – Write anytime, anywhere
+- 🔍 Smart search – Find entries with natural language
+- ☁️ Optional backups – Sync to cloud only if you choose
+- 📊 Auto summaries – Weekly and monthly reports
 
 ---
 
-## 🚀 项目启动指南
+## 🎯 Core Principles
 
-### 📦 前端项目（Next.js）
+| Principle         | Description                                                                 |
+|------------------|-----------------------------------------------------------------------------|
+| 🔐 Privacy-first  | Data is not uploaded unless explicitly requested; stored locally in IndexedDB or filesystem |
+| 📴 Offline-first  | Works entirely offline, including viewing, editing, and search              |
+| 🧠 AI-powered     | Supports natural language search, emotion tracking, and automatic summaries |
+| 💾 Backup-friendly| Local and optional cloud backups (e.g., AWS S3)                             |
+| 🔗 Share freely   | Export and share diary entries as images or links without requiring accounts |
+
+---
+
+## 🧱 Architecture Overview
+
+### ⚛️ Frontend (Next.js)
+
+- PWA (Installable Web App)
+- Offline caching via IndexedDB
+- JWT-based auth system
+- Rich-text editor with image support
+- Data visualization via ECharts / D3
+
+### ☕ Backend Microservices (Java Spring Boot)
+
+- **User Service**
+  - Register/Login with JWT
+  - Role-based access control
+
+- **Content Service**
+  - Create/edit/delete/search diary entries
+  - Image upload (memory or S3)
+  - Offline sync mechanism
+
+- **AI Service**
+  - Elasticsearch / vector DB for natural language search
+  - AI-driven tagging and summarization
+
+- **Backup Service**
+  - Cloud sync to AWS S3
+  - Export/import functionality
+
+### ☁️ Serverless Functions (AWS Lambda)
+
+- Weekly/monthly digests
+- Scheduled content analysis
+- Tag clustering and statistics
+
+---
+
+## 🚀 Getting Started
+
+### 📦 Frontend (Next.js)
 
 ```bash
 cd frontend
