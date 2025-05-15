@@ -1,1 +1,16 @@
 /node_modules
+# Local .terraform directories
+.terraform/
+.env
+# Ignore override files (usually local)
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Ignore CLI configuration files
+.terraformrc
+terraform.rc
+
+# Ignore crash logs
+crash.log

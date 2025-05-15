@@ -1,10 +1,25 @@
-var express = require('express');
-var router = express.Router();
-var db = require('../sqlite/db');  // Import the shared database connection
+require('dotenv').config();
+const express = require('express');
+const router = express.Router();
+const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
+const crypto = require('crypto');
+const path = require('path');
+const db = require('../sqlite/db');
 const multer = require('multer');
-const storage = multer.memoryStorage(); // Store images in memory
+const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
+// 初始化 S3
+const s3 = new S3Client({
+  region: process.env.AWS_REGION || 'ca-central-1',
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+  }
+});
+const BUCKET_NAME = process.env.S3_BUCKET_NAME || 'memoir-diary-pics';
+
+// 创建表
 const createDiariesTableSQL = `
   CREATE TABLE IF NOT EXISTS diaries (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -12,48 +27,31 @@ const createDiariesTableSQL = `
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   );
 `;
-
 const createDiaryImagesTableSQL = `
   CREATE TABLE IF NOT EXISTS diary_images (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     diary_id INTEGER,
-    image_data BLOB,
+    image_data TEXT,  -- 改为 TEXT 存 S3 key
     FOREIGN KEY(diary_id) REFERENCES diaries(id)
   );
 `;
+db.run(createDiariesTableSQL);
+db.run(createDiaryImagesTableSQL);
 
+// 获取日记
 const getDiariesSQL = `
   SELECT diaries.id, diaries.content, diaries.created_at, diary_images.id AS image_id, diary_images.image_data
   FROM diaries
   LEFT JOIN diary_images ON diaries.id = diary_images.diary_id
 `;
 
-db.run(createDiariesTableSQL, function(err) {
-  if (err) {
-    console.error('Error creating diaries table:', err.message);
-  } else {
-    console.log('Diaries table is ready');
-  }
-});
-
-db.run(createDiaryImagesTableSQL, function(err) {
-  if (err) {
-    console.error('Error creating diary_images table:', err.message);
-  } else {
-    console.log('Diary_images table is ready');
-  }
-});
-
-router.get('/getDiaries', function (req, res, next) {
+router.get('/getDiaries', function (req, res) {
   db.all(getDiariesSQL, [], (err, rows) => {
-    if (err) {
-      console.error('Error fetching diaries and images:', err.message);
-      return res.status(500).json({ error: 'Failed to fetch diaries and images' });
-    }
+    if (err) return res.status(500).json({ error: 'Failed to fetch diaries and images' });
 
     const diaries = {};
 
-    rows.forEach((row) => {
+    rows.forEach(row => {
       if (!diaries[row.id]) {
         diaries[row.id] = {
           id: row.id,
@@ -64,81 +62,84 @@ router.get('/getDiaries', function (req, res, next) {
       }
 
       if (row.image_id && row.image_data) {
-        // Convert Buffer (BLOB) to base64
-        const base64Image = Buffer.from(row.image_data).toString('base64');
-
+        const imageUrl = `https://${BUCKET_NAME}.s3.amazonaws.com/${row.image_data}`;
         diaries[row.id].images.push({
           id: row.image_id,
-          base64: base64Image,
-          mime: 'image/jpeg' // 你可以根据实际格式动态判断
+          url: imageUrl
         });
       }
     });
 
-    const result = Object.values(diaries);
-    res.json({ diaries: result });
+    res.json({ diaries: Object.values(diaries) });
   });
 });
 
-router.post('/addDiary', upload.array('images[]'), (req, res) => {
+// 上传日记 + 图片
+router.post('/addDiary', upload.array('images[]'), async (req, res) => {
   const { content } = req.body;
   const images = req.files;
 
-  if (!content) {
-    res.status(400).json({ message: 'Content is required' });
-  }
+  if (!content) return res.status(400).json({ message: 'Content is required' });
 
-  const insertDiaryQuery = 'INSERT INTO diaries (content) VALUES (?)';
+  db.run('INSERT INTO diaries (content) VALUES (?)', [content], async function(err) {
+    if (err) return res.status(500).json({ message: 'Database error', error: err });
 
-  db.run(insertDiaryQuery, [content], function(err) {
-    if (err) {
-      return res.status(500).json({ message: 'Database error', error: err });
+    const diaryId = this.lastID;
+
+    for (const image of images) {
+      const ext = path.extname(image.originalname) || '.jpg';
+      const key = `diary-images/${diaryId}/${crypto.randomUUID()}${ext}`;
+
+      try {
+        const command = new PutObjectCommand({
+          Bucket: BUCKET_NAME,
+          Key: key,
+          Body: image.buffer,
+          ContentType: image.mimetype
+        });
+        await s3.send(command);
+
+        db.run('INSERT INTO diary_images (diary_id, image_data) VALUES (?, ?)', [diaryId, key]);
+      } catch (err) {
+        console.error('S3 upload failed:', err);
+        return res.status(500).json({ message: 'Upload to S3 failed', error: err });
+      }
     }
 
-    const diaryId = this.lastID;  // Get the inserted diary ID
-
-    const insertImageQuery = 'INSERT INTO diary_images (diary_id, image_data) VALUES (?, ?)';
-
-    images.forEach(image => {
-      const imageBlob = image.buffer // Convert Base64 image data to binary
-      db.run(insertImageQuery, [diaryId, imageBlob], function(err) {
-        if (err) {
-          return res.status(500).json({ message: 'Database error when inserting images', error: err });
-        }
-        console.log(`Diary saved with ID: ${this.lastID}`);
-      });
-    });
+    res.status(200).json({ message: 'Diary saved', diaryId });
   });
-  res.status(200).json({ message: 'Content is required' });
 });
 
-
-// POST delete a diary entry by id and its related images
-router.post('/deleteDiary', function(req, res, next) {
+// 删除日记
+router.post('/deleteDiary', function(req, res) {
   const { id } = req.body;
+  if (!id) return res.status(400).json({ message: 'Diary ID is required' });
 
-  // Validate input
-  if (!id) {
-    return res.status(400).json({ message: 'Diary ID is required' });
-  }
+  db.all('SELECT image_data FROM diary_images WHERE diary_id = ?', [id], async (err, rows) => {
+    if (err) return res.status(500).json({ message: 'Fetch failed before deletion', error: err });
 
-  // Delete images associated with the diary entry
-  const deleteImagesQuery = 'DELETE FROM diary_images WHERE diary_id = ?';
-  db.run(deleteImagesQuery, [id], function(err) {
-    if (err) {
-      return res.status(500).json({ message: 'Error deleting images', error: err });
+    // 删除 S3 上的对象
+    for (const row of rows) {
+      const key = row.image_data;
+      try {
+        await s3.send(new PutObjectCommand({
+          Bucket: BUCKET_NAME,
+          Key: key
+        }));
+      } catch (err) {
+        console.warn(`Failed to delete ${key} from S3`, err);
+      }
     }
 
-    // Now delete the diary entry itself
-    const deleteDiaryQuery = 'DELETE FROM diaries WHERE id = ?';
-    db.run(deleteDiaryQuery, [id], function(err) {
-      if (err) {
-        return res.status(500).json({ message: 'Error deleting diary', error: err });
-      }
-      if (this.changes === 0) {
-        return res.status(404).json({ message: 'Diary entry not found' });
-      }
-      res.json({ message: 'Diary entry and associated images deleted', id });
+    db.run('DELETE FROM diary_images WHERE diary_id = ?', [id], err => {
+      if (err) return res.status(500).json({ message: 'Error deleting images', error: err });
+
+      db.run('DELETE FROM diaries WHERE id = ?', [id], function(err) {
+        if (err) return res.status(500).json({ message: 'Error deleting diary', error: err });
+        if (this.changes === 0) return res.status(404).json({ message: 'Diary not found' });
+
+        res.json({ message: 'Diary and images deleted', id });
+      });
     });
   });
 });
