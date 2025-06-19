@@ -35,6 +35,7 @@ const createDiaryImagesTableSQL = `
     FOREIGN KEY(diary_id) REFERENCES diaries(id)
   );
 `;
+
 db.run(createDiariesTableSQL);
 db.run(createDiaryImagesTableSQL);
 
