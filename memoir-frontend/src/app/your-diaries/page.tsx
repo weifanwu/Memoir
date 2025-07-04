@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 
 interface DiaryImage {
   id: number;
-  base64: string;
+  url: string;
 }
 
 interface Diary {
@@ -21,6 +21,7 @@ const YourDiaries: React.FC = () => {
       try {
         const response = await fetch('http://localhost:8000/api/getDiaries');
         const data = await response.json();
+        console.log('Fetched diaries:', data); // 调试输出
         setDiaries(data.diaries); // 注意你接口返回的是 { diaries: [...] }
       } catch (error) {
         console.error('Error fetching diaries:', error);
@@ -29,7 +30,6 @@ const YourDiaries: React.FC = () => {
 
     fetchDiaries();
   }, []);
-
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Your Diaries</h1>
@@ -47,7 +47,7 @@ const YourDiaries: React.FC = () => {
                 {diary.images.map((img) => (
                   <img
                     key={img.id}
-                    src={`data:image/jpeg;base64,${img.base64}`}
+                    src={img.url}
                     alt={`diary-${diary.id}-img-${img.id}`}
                     className="w-32 h-32 object-cover rounded"
                   />
