@@ -2,7 +2,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = ">= 5.31.0"
+      version = "5.35.0"
     }
   }
 }
@@ -47,4 +47,38 @@ resource "aws_lambda_function" "my_lambda" {
 
   role    = aws_iam_role.lambda_exec_role.arn
   timeout = 10
+}
+
+# 创建 user 表
+resource "aws_dynamodb_table" "user_table" {
+  name           = "user"
+  billing_mode   = "PAY_PER_REQUEST" # 按需计费
+  hash_key       = "userid"
+
+  attribute {
+    name = "userid"
+    type = "S"
+  }
+
+  tags = {
+    Environment = "dev"
+    Project     = "diary-app"
+  }
+}
+
+# 创建 diary 表
+resource "aws_dynamodb_table" "diary_table" {
+  name           = "diary"
+  billing_mode   = "PAY_PER_REQUEST"
+  hash_key       = "diaryid"
+
+  attribute {
+    name = "diaryid"
+    type = "S"
+  }
+
+  tags = {
+    Environment = "dev"
+    Project     = "diary-app"
+  }
 }

@@ -1,4 +1,6 @@
-import Navbar from '../components/Navbar';  // 引入 Navbar 组件
+'use client';
+import { AuthProvider } from '@/contexts/AuthContext';
+import Navbar from '../components/Navbar';
 import PwaInit from '@/components/PwaInit';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -8,9 +10,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="manifest" href="/manifest.json" />
       </head>
       <body>
-        <PwaInit />
-        <Navbar />
-        {children}
+        <AuthProvider>
+          <PwaInit />
+          <Navbar />
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );

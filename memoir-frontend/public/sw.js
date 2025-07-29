@@ -35,11 +35,14 @@ const cacheClone = async (e) => {
 
     return new Response('Offline', {
       status: 503,
-      statusText: 'Offline',
+      statusText: 'offline',
     });
   }
 };
 
 self.addEventListener('fetch', (e) => {
+  if (e.request.method !== 'GET') {
+    return;
+  }
   e.respondWith(cacheClone(e));
 });

@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package diary;
+
+option java_package = "com.example.demo.grpc";
+option java_outer_classname = "DiaryProto";
+
+service DiaryService {
+  rpc AddDiary(DiaryRequest) returns (DiaryResponse);
+}
+
+message DiaryRequest {
+  string userId = 1;
+  string content = 2;
+}
+
+message DiaryResponse {
+  string status = 1;
+}
