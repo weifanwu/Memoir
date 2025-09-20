@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import styles from "../styles/Home.module.css";
 import { useAuth } from "@/contexts/AuthContext";
+import { useServices } from "@/contexts/ServiceContext";
 
 export default function Home() {
   const [username, setUsername] = useState("");
@@ -13,7 +14,7 @@ export default function Home() {
   const workerRef = useRef<Worker | null>(null);
   const router = useRouter();
   const { authenticated, loading, refreshAuth } = useAuth();
-
+  const { user: USER_SERVICE, store: STORE_SERVICE } = useServices();
   useEffect(() => {
     workerRef.current = new Worker("/workers/diaryWorker.js");
     return () => {
@@ -26,7 +27,7 @@ export default function Home() {
     setMessage("");
 
     try {
-      const res = await fetch("http://localhost:8080/api/auth/login", {
+      const res = await fetch(`${USER_SERVICE}/api/auth/login`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -49,7 +50,7 @@ export default function Home() {
   async function uploadOfflineDiaries(diaries: any[]) {
     for (const diary of diaries) {
       console.log("Uploading diary:", diary);
-      const res = await fetch("http://localhost:8000/api/uploadDiary", {
+      const res = await fetch(`${STORE_SERVICE}/api/uploadDiary`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },

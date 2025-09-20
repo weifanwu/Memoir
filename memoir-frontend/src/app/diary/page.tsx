@@ -4,7 +4,7 @@ import styles from '../../styles/Diary.module.css';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { getHandleFromDB, saveHandleToDB } from '@/utils/fileSystemUtils';
-
+import { useServices } from "@/contexts/ServiceContext";
 
 function saveToLocalWorker(diaryid: string, content: string, date: string, username: string) {
   const worker = new Worker('/workers/diaryWorker.js');
@@ -70,6 +70,7 @@ export default function Diary() {
   }
 
   const handleSubmit = async () => {
+    const { store: STORE_SERVICE } = useServices();
     if (!text.trim()) {
       alert('请填写日记内容');
       return;
@@ -107,7 +108,7 @@ export default function Diary() {
         await appendDiaryEntry(handle, diaryEntry);
       }
 
-      const response = await fetch('http://localhost:8000/api/uploadDiary', {
+      const response = await fetch(`${STORE_SERVICE}/api/uploadDiary`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

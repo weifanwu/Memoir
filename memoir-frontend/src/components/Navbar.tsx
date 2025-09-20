@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import styles from '../styles/Navbar.module.css';
 import { useAuth } from '@/contexts/AuthContext';
+import { useServices } from "@/contexts/ServiceContext";
 
 const Navbar = () => {
   const [showSignup, setShowSignup] = useState(false);
@@ -11,7 +12,7 @@ const Navbar = () => {
   const [message, setMessage] = useState('');
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const { authenticated, username, refreshAuth } = useAuth();
-
+  const { user: USER_SERVICE } = useServices();
   // 关闭 dropdown 的逻辑（点击外部时关闭菜单）
   const dropdownRef = useRef<HTMLLIElement>(null);
   useEffect(() => {
@@ -29,7 +30,7 @@ const Navbar = () => {
   // 注册逻辑
   async function handleSignup(e: React.FormEvent) {
     e.preventDefault();
-    const res = await fetch('http://localhost:8080/api/auth/signup', {
+    const res = await fetch(`${USER_SERVICE}/api/auth/signup`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -52,7 +53,7 @@ const Navbar = () => {
 
   // 登出逻辑
   async function handleSignout() {
-    const res = await fetch('http://localhost:8080/api/auth/signout', {
+    const res = await fetch(`${USER_SERVICE}/api/auth/signout`, {
       method: 'POST',
       credentials: 'include',
     });

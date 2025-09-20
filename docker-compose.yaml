@@ -1,0 +1,19 @@
+version: "3.9"
+services:
+  frontend:
+    build: ./memoir-frontend
+    image: memoir-frontend
+    ports:
+      - "3000:3000"
+
+  user-service:
+    build: ./services/memo-user-service
+    image: memo-user-service
+    ports:
+      - "8080:8080"
+
+  store-service:
+    build: ./services/memo-store-service
+    image: memo-store-service
+    ports:
+      - "8000:8000"

@@ -1,5 +1,6 @@
 'use client';
 import { createContext, useContext, useState, useEffect } from 'react';
+import { useServices } from './ServiceContext';
 
 interface AuthContextType {
   authenticated: boolean;
@@ -16,13 +17,14 @@ const AuthContext = createContext<AuthContextType>({
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const { user: USER_SERVICE } = useServices();
   const [authenticated, setAuthenticated] = useState(false);
   const [username, setUsername] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   async function refreshAuth() {
     try {
-      const res = await fetch('http://localhost:8080/api/auth/check', {
+      const res = await fetch(`${USER_SERVICE}/api/auth/check`, {
         credentials: 'include',
       });
       if (res.ok) {

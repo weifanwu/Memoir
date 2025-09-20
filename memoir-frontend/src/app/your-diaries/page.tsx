@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from '../../styles/YourDiaries.module.css';
 import { getHandleFromDB } from '@/utils/fileSystemUtils';
+import { useServices } from "@/contexts/ServiceContext";
 
 interface Diary {
   content: string;
@@ -17,6 +18,7 @@ const YourDiaries: React.FC = () => {
   const { authenticated, username, loading } = useAuth();
   const router = useRouter();
   const [deletingIds, setDeletingIds] = useState<string[]>([]);
+  const { store: STORE_SERVICE } = useServices();
 
 
   async function deleteDiaryFromLocal(diaryid: string) {
@@ -59,7 +61,7 @@ const YourDiaries: React.FC = () => {
     }
     const fetchDiaries = async () => {
       try {
-        const response = await fetch(`http://localhost:8000/api/getDiaries?username=${encodeURIComponent(username || '')}`, {
+        const response = await fetch(`${STORE_SERVICE}/api/getDiaries?username=${encodeURIComponent(username || '')}`, {
           credentials: 'include',
         });
         const data = await response.json();
@@ -95,7 +97,7 @@ const YourDiaries: React.FC = () => {
     setDeletingIds((ids) => [...ids, diaryid]);
 
     try {
-      const res = await fetch(`http://localhost:8000/api/deleteDiary/${encodeURIComponent(diaryid)}`, {
+      const res = await fetch(`${STORE_SERVICE}/api/deleteDiary/${encodeURIComponent(diaryid)}`, {
         method: 'DELETE',
         credentials: 'include',
       });

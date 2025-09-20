@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: store-service-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: express
+  template:
+    metadata:
+      labels:
+        app: express
+    spec:
+      containers:
+        - name: memo-store-service
+          image: memo-store-service
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: memo-store-service
+spec:
+  selector:
+    app: express
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000

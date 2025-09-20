@@ -31,7 +31,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:3000")); // 允许的前端地址
+        config.setAllowedOrigins(List.of("http://localhost:3000", "http://127.0.0.1:59601")); // 允许的前端地址
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Content-Type", "Authorization"));
         config.setAllowCredentials(true); // 允许带上 Cookie (重要)

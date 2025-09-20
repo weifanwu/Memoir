@@ -96,26 +96,26 @@ app.use(function(err, req, res, next) {
 
 module.exports = app;
 
-const grpc = require('@grpc/grpc-js');
-const protoLoader = require('@grpc/proto-loader');
+// const grpc = require('@grpc/grpc-js');
+// const protoLoader = require('@grpc/proto-loader');
 
-const packageDef = protoLoader.loadSync(path.join(__dirname, 'proto', 'service.proto'));
-const grpcObject = grpc.loadPackageDefinition(packageDef);
-const diaryPackage = grpcObject.diary;
+// const packageDef = protoLoader.loadSync(path.join(__dirname, 'proto', 'service.proto'));
+// const grpcObject = grpc.loadPackageDefinition(packageDef);
+// const diaryPackage = grpcObject.diary;
 
-function addDiary(call, callback) {
-    const { userId, content } = call.request;
-    console.log(`New diary for ${userId}: ${content}`);
-    callback(null, { status: 'Diary saved' });
-}
+// function addDiary(call, callback) {
+//     const { userId, content } = call.request;
+//     console.log(`New diary for ${userId}: ${content}`);
+//     callback(null, { status: 'Diary saved' });
+// }
 
-const grpcServer = new grpc.Server();
-grpcServer.addService(diaryPackage.DiaryService.service, { AddDiary: addDiary });
+// const grpcServer = new grpc.Server();
+// grpcServer.addService(diaryPackage.DiaryService.service, { AddDiary: addDiary });
 
-grpcServer.bindAsync('127.0.0.1:50052', grpc.ServerCredentials.createInsecure(), (err, port) => {
-    if (err) {
-        console.error('gRPC server bind error:', err);
-        return;
-    }
-    console.log('Diary gRPC server running on port', port);
-});
+// grpcServer.bindAsync('127.0.0.1:50052', grpc.ServerCredentials.createInsecure(), (err, port) => {
+//     if (err) {
+//         console.error('gRPC server bind error:', err);
+//         return;
+//     }
+//     console.log('Diary gRPC server running on port', port);
+// });
