@@ -24,6 +24,12 @@ Modern users rely on digital tools to document their lives, but most journaling 
 
 ---
 
+## 🌟 Technical Stacks:
+![image](https://github.com/user-attachments/assets/d5930e14-a70f-440e-a9c2-5d9d44922139)
+
+
+---
+
 ## 📘 What Is Memoir?
 
 Memoir is an **offline-first journaling application** built with modern tools like **Next.js PWA**, **Spring Boot microservices**, and AI-assisted search.
