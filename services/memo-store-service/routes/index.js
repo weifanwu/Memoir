@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
 const { DynamoDBDocumentClient, QueryCommand, DeleteCommand, PutCommand } = require('@aws-sdk/lib-dynamodb');
+const { sendLog } = require('../kafkaProducer'); // 引入 Kafka 日志函数
 
 const ddbClient = new DynamoDBClient({
   region: process.env.AWS_REGION || 'ca-central-1',
@@ -13,58 +14,48 @@ const ddbClient = new DynamoDBClient({
 });
 
 const ddbDocClient = DynamoDBDocumentClient.from(ddbClient);
-
 const DIARY_TABLE = 'diary';
 
 router.post('/uploadDiary', async (req, res) => {
   let { diaryid, username, content, date } = req.body;
 
-  if (!diaryid) {
-    return res.status(400).json({ message: 'content is required' });
-  }
-  if (!content) {
-    return res.status(400).json({ message: 'content is required' });
-  }
-  if (!username) {
-    return res.status(400).json({ message: 'userid (username) is required to associate diary' });
+  if (!diaryid || !content || !username) {
+    return res.status(400).json({ message: 'diaryid, username and content are required' });
   }
 
-  if (!date) {
-    date = new Date().toISOString();
-  }
-
-
+  if (!date) date = new Date().toISOString();
 
   try {
+    // 写入日记表
     await ddbDocClient.send(new PutCommand({
       TableName: DIARY_TABLE,
-      Item: {
-        diaryid: diaryid, // 使用 UUID 生成唯一的 diaryid
-        username,
-        content,
-        date
-      }
+      Item: { diaryid, username, content, date }
     }));
+
+    await sendLog({
+      action: 'uploadDiary',
+      diaryid,
+      username,
+      timestamp: new Date().toISOString(),
+      ip: req.ip,
+      userAgent: req.headers['user-agent'],
+    });
+
     res.status(200).json({ message: 'Diary uploaded successfully', username });
   } catch (err) {
-    console.error('DynamoDB put diary error:', err);
-    // 返回 503，让前端知道失败
-    res.status(503).json({ message: 'Failed to upload diary, save locally', error: err.message });
+    console.error('Error uploading diary:', err);
+    res.status(503).json({ message: 'Failed to upload diary', error: err.message });
   }
 });
 
-// 获取所有日记（按用户，用 GSI 查询）
 router.get('/getDiaries', async (req, res) => {
   const { username } = req.query;
-
-  if (!username) {
-    return res.status(400).json({ message: 'username is required' });
-  }
+  if (!username) return res.status(400).json({ message: 'username is required' });
 
   try {
     const result = await ddbDocClient.send(new QueryCommand({
       TableName: DIARY_TABLE,
-      IndexName: 'username-index', // 使用 GSI
+      IndexName: 'username-index',
       KeyConditionExpression: "#u = :u",
       ExpressionAttributeNames: { "#u": "username" },
       ExpressionAttributeValues: { ":u": username },
@@ -77,19 +68,21 @@ router.get('/getDiaries', async (req, res) => {
   }
 });
 
-// 删除指定日记（通过 diaryid）
 router.delete('/deleteDiary/:diaryid', async (req, res) => {
   const { diaryid } = req.params;
-
-  if (!diaryid) {
-    return res.status(400).json({ message: 'diaryid is required' });
-  }
+  if (!diaryid) return res.status(400).json({ message: 'diaryid is required' });
 
   try {
-    await ddbDocClient.send(new DeleteCommand({
-      TableName: DIARY_TABLE,
-      Key: { diaryid },
-    }));
+    await ddbDocClient.send(new DeleteCommand({ TableName: DIARY_TABLE, Key: { diaryid } }));
+
+    await sendLog({
+      action: 'deleteDiary',
+      diaryid,
+      timestamp: new Date().toISOString(),
+      ip: req.ip,
+      userAgent: req.headers['user-agent'],
+    });
+
     res.status(200).json({ message: 'Diary deleted successfully', diaryid });
   } catch (err) {
     console.error('DynamoDB delete error:', err);

@@ -1,6 +1,6 @@
 const { createClient } = require('redis');
 const client = createClient({
-  url: 'redis://redis-service:6379'
+  url: 'redis://localhost:6379'
 });
 
 client.on('error', (err) => console.error('Redis Client Error', err));

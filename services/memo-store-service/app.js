@@ -5,7 +5,8 @@ var cookieParser = require('cookie-parser');
 var cors = require('cors');
 var logger = require('morgan');
 const client = require('./redis/redisClient');  // 引入上面初始化好的连接
-
+const { initConsumer } = require('./kafkaConsumer');
+const { initProducer, sendLog } = require('./kafkaProducer');
 var indexRouter = require('./routes/index');
 
 var app = express();
@@ -23,6 +24,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+initProducer();
+initConsumer().catch(console.error);
 
 // Base64 URL-safe 解码函数
 function base64UrlDecode(base64UrlString) {
