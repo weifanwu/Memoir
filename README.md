@@ -25,7 +25,7 @@ Modern users rely on digital tools to document their lives, but most journaling 
 ---
 
 ## 🌟 Technical Stacks:
-![image](https://github.com/user-attachments/assets/d5930e14-a70f-440e-a9c2-5d9d44922139)
+<img width="705" height="515" alt="image" src="https://github.com/user-attachments/assets/79d77947-1edb-49db-8b12-0e1caabedfbe" />
 
 
 ---
