@@ -27,6 +27,7 @@ export default function Diary() {
   const [fileHandle, setFileHandle] = useState<FileSystemFileHandle | null>(null);
   const [saving, setSaving] = useState(false);
   const { authenticated, username, loading } = useAuth();
+  const { store: STORE_SERVICE } = useServices();
   const router = useRouter();
 
   useEffect(() => {
@@ -70,7 +71,6 @@ export default function Diary() {
   }
 
   const handleSubmit = async () => {
-    const { store: STORE_SERVICE } = useServices();
     if (!text.trim()) {
       alert('请填写日记内容');
       return;
