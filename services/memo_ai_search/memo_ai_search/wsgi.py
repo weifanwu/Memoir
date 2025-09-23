@@ -1,5 +1,5 @@
 """
-WSGI config for memo_ai_insight_service project.
+WSGI config for memo_ai_search project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'memo_ai_insight_service.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'memo_ai_search.settings')
 
 application = get_wsgi_application()
